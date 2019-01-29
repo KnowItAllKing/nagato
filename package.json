@@ -1,0 +1,13 @@
+{
+  "name": "nagato",
+  "version": "1.0.0",
+  "main": "nagato.js",
+  "repository": "https://github.com/knowitallking/nagato",
+  "license": "MIT",
+  "dependencies": {
+    "async-redis": "^1.1.5",
+    "discord.js": "discordjs/discord.js",
+    "dotenv": "^6.2.0",
+    "mongoose": "^5.4.7"
+  }
+}
