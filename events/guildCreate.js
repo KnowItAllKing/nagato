@@ -2,7 +2,7 @@ const {
   MessageEmbed
 } = require('discord.js');
 const Guild = require('../models/Guild');
-module.exports = async (client, redis, guild) => {
+module.exports = async (client, guild) => {
   const tosave = new Guild({
     id: guild.id,
     prefix: 'n.'

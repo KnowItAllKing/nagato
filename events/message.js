@@ -2,25 +2,29 @@ const {
   MessageEmbed
 } = require('discord.js');
 const Guild = require('../models/Guild');
-module.exports = async (client, redis, message) => {
+module.exports = async (client, message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
-  const prefix = await redis.get(`${message.guild.id}`);
+  if (!message.guild.me.hasPermission('SEND_MESSAGES')) return;
+  let prefix = await client.redis.get(`prefix-${message.guild.id}`);
   if (!prefix) {
     const doc = await Guild.findOne({
       id: message.guild.id
     });
     prefix = doc.prefix;
-    await redis.set(`${message.guild.id}`, doc.prefix, redis.print);
+    await client.redis.set(`prefix-${message.guild.id}`, doc.prefix);
+    console.log(`Uncached prefix is now cached for ${message.guild.name}`);
   }
   if (!message.content.trim().startsWith(prefix)) return;
   const args = message.content.trim().slice(prefix.length).split(/\s+/g);
-  const command = args.shift().toLowerCase();
-  if (!client.commands.get(command)) return;
+  const command = args.shift().toLowerCase(),
+    cmd = client.commands.get(command);
+  if (!cmd) return;
+  if (!message.member.hasPermission(cmd.permission)) return await message.channel.send('You must have the `' + cmd.permission + '` permission to use this command.');
   try {
-    return client.commands.get(command).execute(client, message, args);
+    return await cmd.execute(client, message, args);
   } catch (e) {
-    await message.channel.send('An error has occurred. Please notify the support staff of this along with the time this has occurred.');
-    return client.channels.get(process.env.ERROR).send(new MessageEmbed().setAuthor('Error', ))
+    await message.channel.send('An error has occurred.');
+    return await client.channels.get(process.env.ERROR).send(new MessageEmbed().setAuthor('Command Error', message.guild.iconURL).addField('Guild: ', message.guild.id));
   }
 }
