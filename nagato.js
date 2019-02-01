@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 async function start() {
   await mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true,
-    useFindAndModify: true
+    useFindAndModify: false
   });
   new Client(commandHandler, eventHandler, process.env.TOKEN);
 }

@@ -6,15 +6,8 @@ module.exports = async (client, message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
   if (!message.guild.me.hasPermission('SEND_MESSAGES')) return;
-  let prefix = await client.redis.get(`prefix-${message.guild.id}`);
-  if (!prefix) {
-    const doc = await Guild.findOne({
-      id: message.guild.id
-    });
-    prefix = doc.prefix;
-    await client.redis.set(`prefix-${message.guild.id}`, doc.prefix);
-    console.log(`Uncached prefix is now cached for ${message.guild.name}`);
-  }
+  const prefix = await client.redis.get(`prefix-${message.guild.id}`);
+  if (!prefix) console.log(`Uncached prefix for ${message.guild.name}`);
   if (!message.content.trim().startsWith(prefix)) return;
   const args = message.content.trim().slice(prefix.length).split(/\s+/g);
   const command = args.shift().toLowerCase(),
@@ -24,7 +17,8 @@ module.exports = async (client, message) => {
   try {
     return await cmd.execute(client, message, args);
   } catch (e) {
-    await message.channel.send('An error has occurred.');
-    return await client.channels.get(process.env.ERROR).send(new MessageEmbed().setAuthor('Command Error', message.guild.iconURL).addField('Guild: ', message.guild.id));
+    console.log(e);
+    return await message.channel.send('An error has occurred.');
+    // return await client.channels.get(process.env.ERROR).send(new MessageEmbed().setAuthor('Command Error', message.guild.iconURL).addField('Guild: ', message.guild.id));
   }
 }

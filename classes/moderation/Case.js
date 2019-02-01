@@ -25,7 +25,7 @@ class Case {
     if (options.type === 'Kick') color = '#fbff00';
     if (options.type === 'Ban') color = '#ff0000';
     if (options.type === 'Softban') color = '#ff7d00';
-    if (options.type === 'Mute') colo = '#ffd000';
+    if (options.type === 'Mute') color = '#ffd000';
 
     const casenum = arr ? arr.length + 1 : 1,
       user = await this.client.users.fetch(options.user),
@@ -44,20 +44,23 @@ class Case {
         id: options.guild
       });
       chan = this.client.channels.get(doc.log);
+      if (!chan) chan = null;
       try {
         await this.client.redis.set(`log-${options.guild}`, chan.id);
         console.log(`Cached the uncached log channel ID for ${options.guild}`);
       } catch (e) {}
+
     }
-    const msg = await chan.send(embed);
+    const msg = chan ? await chan.send(embed) : null;
     const newCase = new CaseModel({
       guild: options.guild,
       staff: options.staff,
+      type: options.type,
       reason: options.reason,
       user: options.user,
       case: casenum,
-      message: msg.id,
-      channel: chan.id,
+      message: chan ? msg.id : null,
+      channel: chan ? chan.id : null,
       locked: true
     });
     await newCase.save();
@@ -65,11 +68,12 @@ class Case {
     return newCase;
   }
   async fetch(options) {
-    let toFetch = await this.client.redis.get(`case${options.case}-${options.guild}`);
+    let toFetch = JSON.parse(await this.client.redis.get(`case${options.case}-${options.guild}`));
     if (!toFetch) {
       try {
-        toFetch = await CaseModel.findOne(options);
-        await this.client.redis.set(`case${options.case}-${options.guild}`);
+        const doc = await CaseModel.findOne(options);
+        await this.client.redis.set(`case${options.case}-${options.guild}`, JSON.stringify(doc));
+        return doc;
       } catch (e) {
         return;
       }
@@ -84,7 +88,7 @@ class Case {
     }, {
       new: true
     });
-    await this.client.redis.set(`case${options.case}-${options.guild}`, doc);
+    await this.client.redis.set(`case${options.case}-${options.guild}`, JSON.stringify(doc));
     return doc;
   }
 

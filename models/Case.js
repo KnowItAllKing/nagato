@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Case = mongoose.Schema({
   guild: String,
   staff: String,
+  type: String,
   reason: String,
   user: String,
   case: Number,
