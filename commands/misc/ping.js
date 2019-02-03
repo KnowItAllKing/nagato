@@ -3,8 +3,8 @@ module.exports = {
   aliases: ['pong', 'test'],
   description: 'Ping command!',
   permission: 'SEND_MESSAGES',
-  usage: 'n.ping',
+  usage: '`n.ping`',
   execute: async (client, message, args) => {
-    return message.channel.send('Pong!');
+    return await message.channel.send('Pong!');
   }
 }

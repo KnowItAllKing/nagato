@@ -19,11 +19,13 @@ class CommandHandler {
           if (err) throw err;
           for (const file of files) {
             if (!file.endsWith('.js')) continue;
-            const command = new Command(require(`${torequire}/${folder}/${file}`));
+            var command = new Command(require(`${torequire}/${folder}/${file}`));
+            command.category = folder;
             this.client.commands.set(command.name, command);
             command.aliases.forEach(alias => {
+              // command.alias = true;
               this.client.commands.set(alias, command);
-            })
+            });
           }
         });
       }
