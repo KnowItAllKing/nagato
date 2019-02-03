@@ -52,6 +52,7 @@ class Nagato extends Client {
       }
       try {
         await this.redis.set(`config-${guild.id}`, JSON.stringify(doc));
+        await this.redis.set(`prefix-${guild.id}`, doc.prefix);
       } catch (e) {
         return console.log('Unable to cache ' + guild.name);
       }
