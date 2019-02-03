@@ -1,5 +1,6 @@
-const CaseModel = require('../../models/Case');
-const Guild = require('../../models/Guild');
+const CaseModel = require('../models/Case');
+const Guild = require('../models/Guild');
+const sprintf = require('sprintf-js').sprintf;
 const {
   MessageEmbed
 } = require('discord.js');
@@ -69,10 +70,12 @@ class Case {
     return newCase;
   }
   async fetch(options) {
+    if (typeof options.case !== 'number') return null;
     let toFetch = JSON.parse(await this.client.redis.get(`case${options.case}-${options.guild}`));
     if (!toFetch) {
       try {
         const doc = await CaseModel.findOne(options);
+        if (!doc) return null;
         await this.client.redis.set(`case${options.case}-${options.guild}`, JSON.stringify(doc));
         return doc;
       } catch (e) {
@@ -102,19 +105,13 @@ class Case {
       k = 0,
       b = 0;
 
-    function rgbToHex(rgb) {
-      var hex = Number(rgb).toString(16);
-      if (hex.length < 2) {
-        hex = '0' + hex;
-      }
-      return hex;
-    };
-
     function fullColorHex(r, g, b) {
-      var red = rgbToHex(r);
-      var green = rgbToHex(g);
-      var blue = rgbToHex(b);
-      return red + green + blue;
+      const ri = Math.round(r) * 256 * 256;
+      const gi = Math.round(g) * 256;
+      const bi = Math.round(b);
+      const retnum = (ri + gi + bi);
+      const retstring = sprintf("%06x", retnum);
+      return retstring;
     };
     for (const doc of docs) {
       if (doc.type === 'Ban') b++;
@@ -123,8 +120,9 @@ class Case {
       if (doc.type === 'Warn') w++;
     }
     const total = w + m + k + b;
-    const red = total > 5 ? 255 : total / 5;
-    const green = total < 5 ? 255 : total > 7 ? 100 : 200;
+    const scalemax = 10;
+    const red = total > scalemax ? 255 : (total / scalemax) * 255;
+    const green = total > scalemax ? 0 : (1 - total / scalemax) * 255;
     const rgb = [red, green, 0];
     const c = fullColorHex(rgb[0], rgb[1], rgb[2]);
     return {

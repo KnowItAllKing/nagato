@@ -21,9 +21,9 @@ class CommandHandler {
             if (!file.endsWith('.js')) continue;
             const command = new Command(require(`${torequire}/${folder}/${file}`));
             this.client.commands.set(command.name, command);
-            for (const alias in command.aliases) {
+            command.aliases.forEach(alias => {
               this.client.commands.set(alias, command);
-            }
+            })
           }
         });
       }

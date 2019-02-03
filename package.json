@@ -9,6 +9,7 @@
     "discord.js": "discordjs/discord.js",
     "dotenv": "^6.2.0",
     "mongoose": "^5.4.7",
-    "ms": "^2.1.1"
+    "ms": "^2.1.1",
+    "sprintf-js": "^1.1.2"
   }
 }

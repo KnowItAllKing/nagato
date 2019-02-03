@@ -1,4 +1,4 @@
-const Guild = require('../../models/Guild');
+const Guild = require('../models/Guild');
 const ms = require('ms');
 async function warn(message, member, reason) {
   const user = member.user;
@@ -174,3 +174,24 @@ async function ban(message, member, reason) {
   return await msg.edit(`Banned ${user.tag}`);
 }
 module.exports.ban = ban;
+async function kick(message, member, reason) {
+  const user = member.user;
+  if (user.id === message.author.id) return await message.channel.send(`The server wouldn't be the same if you kicked yourself.`);
+  if (user.id === message.guild.me.id) return await message.channel.send(`I don't deserve that.`);
+  if (!member.kickable || member.roles.highest.comparePositionTo(message.member.roles.highest) > 0) return await message.channel.send(`That person has god mode enabled. What a drag.`);
+  const m = await message.client.prompt(message, 'Are you sure you want to kick this user? Respond with **Y**es or **N**o within 30 seconds.');
+  if (m === 'Failure') return await message.channel.send(`Operation canceled.`);
+  if (m === 'Timeout') return await message.channel.send(`Error: Didn't receive a confirmation. Operation canceled.`);
+  if (m !== 'Success') return await message.channel.send(`An error occurred.`);
+  const msg = await message.channel.send(`Kick ${user.tag}...`);
+  await message.client.case.create({
+    type: 'Kick',
+    guild: message.guild.id,
+    staff: message.author.id,
+    reason: reason,
+    user: user.id
+  });
+  await member.kick(`Kick by ${message.author.tag}: ${reason}`);
+  return await msg.edit(`Kicked ${user.tag}`);
+}
+module.exports.kick = kick;

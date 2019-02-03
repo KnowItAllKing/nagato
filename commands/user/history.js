@@ -46,7 +46,7 @@ module.exports = new function () {
             case: doc.case
           }, {
             $set: {
-              type: ''
+              type: `${doc.type} (Cleared)`
             }
           });
         }

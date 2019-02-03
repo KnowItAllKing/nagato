@@ -6,9 +6,10 @@ const {
   warn,
   mute,
   softban,
-  ban
-} = require('./moderation/functions');
-const Case = require('./moderation/Case'),
+  ban,
+  kick
+} = require('./functions');
+const Case = require('./Case'),
   CaseModel = require('../models/Case'),
   Guild = require('../models/Guild');
 const {
@@ -37,6 +38,9 @@ class Nagato extends Client {
   async ban(message, member, reason) {
     return await ban(message, member, reason);
   }
+  async kick(message, member, reason) {
+    return await kick(message, member, reason);
+  }
   async cacheGuilds() {
     this.guilds.forEach(async guild => {
       try {
@@ -58,7 +62,6 @@ class Nagato extends Client {
     const docs = await CaseModel.find();
     var count = 0;
     for (const doc of docs) {
-      if (doc.locked === false) continue;
       await this.redis.set(`case${doc.case}-${doc.guild}`, JSON.stringify(doc));
       count++;
     }
