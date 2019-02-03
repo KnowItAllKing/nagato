@@ -1,4 +1,3 @@
-const ms = require('ms');
 module.exports = new function () {
   this.name = 'mute';
   this.aliases = ['m'];

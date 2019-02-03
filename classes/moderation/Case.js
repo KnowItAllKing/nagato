@@ -6,6 +6,7 @@ const {
 class Case {
   constructor(client) {
     this.client = client;
+    this.model = CaseModel;
   }
   async create(options) {
     /*
@@ -91,6 +92,48 @@ class Case {
     await this.client.redis.set(`case${options.case}-${options.guild}`, JSON.stringify(doc));
     return doc;
   }
+  async checkHistory(options) {
+    const docs = await CaseModel.find({
+      guild: options.guild,
+      user: options.user
+    });
+    var w = 0,
+      m = 0,
+      k = 0,
+      b = 0;
 
+    function rgbToHex(rgb) {
+      var hex = Number(rgb).toString(16);
+      if (hex.length < 2) {
+        hex = '0' + hex;
+      }
+      return hex;
+    };
+
+    function fullColorHex(r, g, b) {
+      var red = rgbToHex(r);
+      var green = rgbToHex(g);
+      var blue = rgbToHex(b);
+      return red + green + blue;
+    };
+    for (const doc of docs) {
+      if (doc.type === 'Ban') b++;
+      if (doc.type === 'Kick' || doc.type === 'Softban') k++;
+      if (doc.type === 'Mute') m++;
+      if (doc.type === 'Warn') w++;
+    }
+    const total = w + m + k + b;
+    const red = total > 5 ? 255 : total / 5;
+    const green = total < 5 ? 255 : total > 7 ? 100 : 200;
+    const rgb = [red, green, 0];
+    const c = fullColorHex(rgb[0], rgb[1], rgb[2]);
+    return {
+      color: c,
+      warnings: w,
+      mutes: m,
+      kicks: k,
+      bans: b
+    };
+  }
 }
 module.exports = Case;

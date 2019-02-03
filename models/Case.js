@@ -9,7 +9,6 @@ const Case = mongoose.Schema({
   message: String,
   channel: String,
   locked: Boolean
-
 }, {
   strict: true
 });

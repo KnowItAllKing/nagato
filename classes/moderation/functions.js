@@ -125,3 +125,52 @@ async function setLog(guild, channel) {
   return doc;
 }
 module.exports.setLog = setLog;
+async function softban(message, member, reason) {
+  const user = member.user;
+  if (user.id === message.author.id) return await message.channel.send(`Who would save you if you banned yourself?`);
+  if (user.id === message.guild.me.id) return await message.channel.send(`What have I done to you?`);
+  if (!member.bannable || member.roles.highest.comparePositionTo(message.member.roles.highest) > 0) return await message.channel.send(`That person has god mode enabled. What a drag.`);
+  const m = await message.client.prompt(message, 'Are you sure you want to softban this user? Respond with **Y**es or **N**o within 30 seconds.');
+  if (m === 'Failure') return await message.channel.send(`Operation canceled.`);
+  if (m === 'Timeout') return await message.channel.send(`Error: Didn't receive a confirmation. Operation canceled.`);
+  if (m !== 'Success') return await message.channel.send(`An error occurred.`);
+  const msg = await message.channel.send(`Softbanning ${user.tag}...`);
+  await message.client.case.create({
+    type: 'Softban',
+    guild: message.guild.id,
+    staff: message.author.id,
+    reason: reason,
+    user: user.id
+  });
+  await member.ban({
+    days: 7,
+    reason: `Softban by ${message.author.tag}: ${reason}`
+  });
+  await message.guild.members.unban(user, `Softban successful.`);
+  return await msg.edit(`Softbanned ${user.tag}`);
+}
+module.exports.softban = softban;
+async function ban(message, member, reason) {
+  const user = member.user;
+  if (user.id === message.author.id) return await message.channel.send(`Who would save you if you banned yourself?`);
+  if (user.id === message.guild.me.id) return await message.channel.send(`What have I done to you?`);
+  if (!member.bannable || member.roles.highest.comparePositionTo(message.member.roles.highest) > 0) return await message.channel.send(`That person has god mode enabled. What a drag.`);
+  const m = await message.client.prompt(message, 'Are you sure you want to ban this user? Respond with **Y**es or **N**o within 30 seconds.');
+  if (m === 'Failure') return await message.channel.send(`Operation canceled.`);
+  if (m === 'Timeout') return await message.channel.send(`Error: Didn't receive a confirmation. Operation canceled.`);
+  if (m !== 'Success') return await message.channel.send(`An error occurred.`);
+  const msg = await message.channel.send(`Banning ${user.tag}...`);
+  await message.client.case.create({
+    type: 'Ban',
+    guild: message.guild.id,
+    staff: message.author.id,
+    reason: reason,
+    user: user.id
+  });
+  await member.ban({
+    days: 7,
+    reason: `Ban by ${message.author.tag}: ${reason}`
+  });
+  return await msg.edit(`Banned ${user.tag}`);
+}
+module.exports.ban = ban;

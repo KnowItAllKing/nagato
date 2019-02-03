@@ -4,30 +4,38 @@ const {
 } = require('discord.js');
 const {
   warn,
-  mute
+  mute,
+  softban,
+  ban
 } = require('./moderation/functions');
 const Case = require('./moderation/Case'),
   CaseModel = require('../models/Case'),
   Guild = require('../models/Guild');
-const redis = require('async-redis');
+const {
+  createClient
+} = require('async-redis');
 class Nagato extends Client {
   constructor(CommandHandler, EventHandler, token) {
-    super(CommandHandler, EventHandler, token);
+    super();
     this.commands = new Collection();
     this.CommandHandler = new CommandHandler(this, '../commands');
     this.EventHandler = new EventHandler(this, '../events');
-    this.redis = redis.createClient();
+    this.redis = createClient();
     this.login(token);
     this.case = new Case(this);
-    this.redis.on("error", err => {
-      console.log("Redis error: " + err);
-    });
+    this.redis.on('error', err => console.log('Redis error:\n' + err));
   }
   async warn(message, member, reason) {
     return await warn(message, member, reason);
   }
   async mute(message, member, duration, reason) {
     return await mute(message, member, duration, reason);
+  }
+  async softban(message, member, reason) {
+    return await softban(message, member, reason);
+  }
+  async ban(message, member, reason) {
+    return await ban(message, member, reason);
   }
   async cacheGuilds() {
     this.guilds.forEach(async guild => {
@@ -55,6 +63,19 @@ class Nagato extends Client {
       count++;
     }
     return count;
+  }
+  async prompt(message, prompt) {
+    const success = new RegExp('(yes|y)', 'i'),
+      failure = new RegExp('(no|n)', 'i');
+    await message.channel.send(prompt);
+    const msgs = await message.channel.awaitMessages(mt => mt.author.id === message.author.id, {
+      max: 1,
+      time: 20e3
+    });
+    if (msgs.size === 0) return 'Timeout';
+    const confirmation = msgs.first();
+    if (failure.test(confirmation.content) || !success.test(confirmation.content)) return 'Failure';
+    if (success.test(confirmation.content)) return 'Success';
   }
 
 }
