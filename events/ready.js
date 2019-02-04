@@ -7,6 +7,7 @@ module.exports = async (client) => {
     }, 1.8e+6)
   } catch (e) {
     console.log('Unable to cache guilds.');
+    return process.exit();
   }
   try {
     console.log(`Successfully cached ${await client.cacheCases()} cases.`);
@@ -16,5 +17,6 @@ module.exports = async (client) => {
 
   } catch (e) {
     console.log('Unable to cache cases.');
+    return process.exit();
   }
 }

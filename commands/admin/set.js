@@ -67,6 +67,5 @@ module.exports = new function () {
         .setTimestamp();
       return await client.send(message.channel, embed);
     }
-    client.guild.model.findOne
   }
 }
