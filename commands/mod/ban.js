@@ -1,7 +1,7 @@
 module.exports = new function () {
   this.name = 'ban';
   this.aliases = ['b'];
-  this.description = 'Ban';
+  this.description = 'Ban a member for an optional specified reason';
   this.permission = 'BAN_MEMBERS';
   this.usage = '`n.ban <user> <...reason>`';
   this.execute = async (client, message, args) => {

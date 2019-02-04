@@ -1,7 +1,7 @@
 module.exports = new function () {
   this.name = 'mute';
   this.aliases = ['m'];
-  this.description = 'Mute';
+  this.description = 'Mute a member for a specified duration for an optional specified reason';
   this.permission = 'MANAGE_MESSAGES';
   this.usage = '`n.mute <user> <duration> <...reason>`\nExamples for duration: `30m` is 30 minutes, `12` is 12 hours, and `7d` is 7 days.';
   this.execute = async (client, message, args) => {

@@ -1,7 +1,7 @@
 module.exports = new function () {
   this.name = 'softban';
   this.aliases = ['sb', 'soft'];
-  this.description = 'Softban';
+  this.description = 'Softban a member - bans and unbans immediately after to clear recent messages';
   this.permission = 'BAN_MEMBERS';
   this.usage = '`n.softban <user> <...reason>`';
   this.execute = async (client, message, args) => {

@@ -1,7 +1,7 @@
 module.exports = new function () {
   this.name = 'kick';
   this.aliases = ['k'];
-  this.description = 'Ban';
+  this.description = 'Kick a member for an optional specified reason';
   this.permission = 'KICK_MEMBERS';
   this.usage = '`n.kick <user> <...reason>`';
   this.execute = async (client, message, args) => {

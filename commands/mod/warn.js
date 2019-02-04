@@ -1,7 +1,7 @@
 module.exports = new function () {
   this.name = 'warn';
   this.aliases = ['w'];
-  this.description = 'Warn';
+  this.description = 'Warn a member for a specified reason';
   this.permission = 'MANAGE_MESSAGES';
   this.usage = '`n.warn <user> <...reason>`';
   this.execute = async (client, message, args) => {

@@ -4,7 +4,7 @@ const {
 module.exports = new function () {
   this.name = 'case';
   this.aliases = ['c'];
-  this.description = 'Case';
+  this.description = 'Fetch a case from the server';
   this.permission = 'MANAGE_MESSAGES';
   this.usage = '`n.case <case #>`';
   this.execute = async (client, message, args) => {

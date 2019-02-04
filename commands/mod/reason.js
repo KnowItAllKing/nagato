@@ -5,7 +5,7 @@ const {
 module.exports = new function () {
   this.name = 'reason';
   this.aliases = ['setreason'];
-  this.description = 'Reason';
+  this.description = 'Set the reason for a server\'s case';
   this.permission = 'MANAGE_MESSAGES';
   this.usage = '`n.reason <case #> <...reason>`';
   this.execute = async (client, message, args) => {
