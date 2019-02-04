@@ -5,10 +5,15 @@ const Client = require('./classes/NagatoClient'),
 const mongoose = require('mongoose');
 
 async function start() {
-  await mongoose.connect(process.env.MONGO, {
-    useNewUrlParser: true,
-    useFindAndModify: false
-  });
+  try {
+    await mongoose.connect(process.env.MONGO, {
+      useNewUrlParser: true,
+      useFindAndModify: false
+    });
+  } catch (e) {
+    console.log(e);
+    return process.exit();
+  }
   new Client(commandHandler, eventHandler, process.env.TOKEN);
 }
 start();

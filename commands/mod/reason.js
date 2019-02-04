@@ -29,13 +29,7 @@ module.exports = new function () {
     const m = await client.channels.get(doc.channel).messages.fetch(doc.message);
     const staff = await client.users.fetch(doc.staff),
       user = await client.users.fetch(doc.user);
-    let color = '';
-
-    if (doc.type === 'Warn') color = '#ffd000';
-    if (doc.type === 'Kick') color = '#fbff00';
-    if (doc.type === 'Ban') color = '#ff0000';
-    if (doc.type === 'Softban') color = '#ff7d00';
-    if (doc.type === 'Mute') color = '#ffd000';
+    const color = client.case.get(doc.type);
     const embed = new MessageEmbed()
       .setAuthor(doc.type, staff.displayAvatarURL())
       .setDescription(`\`Case #${doc.case}\``)

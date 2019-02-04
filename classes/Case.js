@@ -9,6 +9,15 @@ class Case {
     this.client = client;
     this.model = CaseModel;
   }
+  get(type) {
+    let color = '';
+    if (type === 'Warn') color = '#ffd000';
+    if (type === 'Kick') color = '#fbff00';
+    if (type === 'Ban') color = '#ff0000';
+    if (type === 'Softban') color = '#ff7d00';
+    if (type === 'Mute') color = '#ffd000';
+    return color;
+  }
   async create(options) {
     /*
     options = {
@@ -22,12 +31,7 @@ class Case {
     const arr = await CaseModel.find({
       guild: options.guild
     });
-    let color = '';
-    if (options.type === 'Warn') color = '#ffd000';
-    if (options.type === 'Kick') color = '#fbff00';
-    if (options.type === 'Ban') color = '#ff0000';
-    if (options.type === 'Softban') color = '#ff7d00';
-    if (options.type === 'Mute') color = '#ffd000';
+    const color = this.get(options.type);
 
     const casenum = arr ? arr.length + 1 : 1,
       user = await this.client.users.fetch(options.user),
