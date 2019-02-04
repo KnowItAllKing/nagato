@@ -23,7 +23,6 @@ class CommandHandler {
             command.category = folder;
             this.client.commands.set(command.name, command);
             command.aliases.forEach(alias => {
-              // command.alias = true;
               this.client.commands.set(alias, command);
             });
           }

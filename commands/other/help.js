@@ -30,8 +30,10 @@ module.exports = new function () {
       return await message.channel.send(embed);
     }
     const modcmds = [],
-      misc = [],
-      user = [];
+      other = [],
+      user = [],
+      music = [],
+      admin = [];
     client.commands.forEach(command => {
       const cd = {
         name: command.name,
@@ -42,27 +44,30 @@ module.exports = new function () {
       }
       if (command.category === 'mod' && modcmds.length === 0) return modcmds.push(cd);
       if (!modcmds.some(i => i.name === command.name) && command.category === 'mod') return modcmds.push(cd);
-      if (command.category === 'misc' && misc.length === 0) return misc.push(cd);
-      if (!misc.some(i => i.name === command.name) && command.category === 'misc') return misc.push(cd);
+      if (command.category === 'other' && other.length === 0) return other.push(cd);
+      if (!other.some(i => i.name === command.name) && command.category === 'other') return other.push(cd);
       if (command.category === 'user' && user.length === 0) return user.push(cd);
       if (!user.some(i => i.name === command.name) && command.category === 'user') return user.push(cd);
+      if (command.category === 'music' && music.length === 0) return music.push(cd);
+      if (!music.some(i => i.name === command.name) && command.category === 'music') return music.push(cd);
+      if (command.category === 'admin' && admin.length === 0) return admin.push(cd);
+      if (!admin.some(i => i.name === command.name) && command.category === 'admin') return admin.push(cd);
     });
-
     const embed = new MessageEmbed()
       .setAuthor(`Help`, client.user.displayAvatarURL())
       .addField(`**Mod**`, '_ _')
       .setColor(process.env.COLOR);
-    for (const cmd of modcmds) {
-      embed.addField(cmd.name, cmd.description, true);
-    }
-    embed.addField(`**Misc**`, '_ _');
-    for (const cmd of misc) {
-      embed.addField(cmd.name, cmd.description, true);
-    }
-    embed.addField(`**User**`, '_ _');
-    for (const cmd of user) {
-      embed.addField(cmd.name, cmd.description, true);
-    }
+    for (const cmd of modcmds) embed.addField(cmd.name, cmd.description, true);
+    if (admin.length > 0) embed.addField(`**Admin**`, '_ _');
+    for (const cmd of admin) embed.addField(cmd.name, cmd.description, true);
+    if (other.length > 0) embed.addField(`**Misc**`, '_ _');
+    for (const cmd of other) embed.addField(cmd.name, cmd.description, true);
+    if (user.length > 0) embed.addField(`**User**`, '_ _');
+    for (const cmd of user) embed.addField(cmd.name, cmd.description, true);
+    if (music.length > 0) embed.addField(`**Music**`, '_ _');
+    for (const cmd of music) embed.addField(cmd.name, cmd.description, true);
+
+
     return await message.channel.send(embed);
 
   }

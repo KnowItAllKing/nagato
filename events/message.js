@@ -7,7 +7,13 @@ module.exports = async (client, message) => {
   if (!message.guild) return;
   if (!message.guild.me.hasPermission('SEND_MESSAGES')) return;
   const prefix = await client.redis.get(`prefix-${message.guild.id}`);
-  if (!prefix) console.log(`Uncached prefix for ${message.guild.name}`);
+  if (!prefix) {
+    const doc = await client.guild.model.findOne({
+      id: message.guild.id
+    });
+    prefix = doc.prefix;
+    await client.redis.set(`prefix-${message.guild.id}`, prefix);
+  }
   if (!message.content.trim().startsWith(prefix)) return;
   const args = message.content.trim().slice(prefix.length).split(/\s+/g);
   const command = args.shift().toLowerCase(),

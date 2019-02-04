@@ -1,6 +1,7 @@
 const {
   Client,
-  Collection
+  Collection,
+  MessageEmbed
 } = require('discord.js');
 const {
   warn,
@@ -24,6 +25,12 @@ class Nagato extends Client {
     this.redis = createClient();
     this.login(token);
     this.case = new Case(this);
+    this.guild = {
+      model: Guild
+    };
+    this.djs = {
+      embed: MessageEmbed
+    };
     this.redis.on('error', err => console.log('Redis error:\n' + err));
   }
   async warn(message, member, reason) {
@@ -80,6 +87,9 @@ class Nagato extends Client {
     const confirmation = msgs.first();
     if (failure.test(confirmation.content) || !success.test(confirmation.content)) return 'Failure';
     if (success.test(confirmation.content)) return 'Success';
+  }
+  async send(channel, message) {
+    return await channel.send(message);
   }
 
 }
