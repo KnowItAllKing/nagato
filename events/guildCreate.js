@@ -8,7 +8,7 @@ module.exports = async (client, guild) => {
     prefix: 'n.'
   });
   await tosave.save();
-  await client.redis.set(`prefix-${message.guild.id}`, tosave.prefix);
+  await client.redis.set(`prefix-${guild.id}`, tosave.prefix);
   const channel = guild.channels.find(ch =>
     ch.type === 'text' &&
     ch.permissionsFor(guild.me).has('SEND_MESSAGES') &&
