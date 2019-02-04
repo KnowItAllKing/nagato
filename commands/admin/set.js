@@ -10,7 +10,7 @@ module.exports = new function () {
         id: message.guild.id
       });
       const embed = new client.djs.embed()
-        .setAuthor(`Settings Query: ${message.guild.name}`, guild.iconURL())
+        .setAuthor(`Settings Query: ${message.guild.name}`, message.guild.iconURL())
         .addField(`Prefix`, doc.prefix, true)
         .addField(`Log Channel`, `<#${doc.log}>`)
         .setColor(process.env.COLOR);
