@@ -67,7 +67,7 @@ async function mute(message, member, duration, reason) {
     var newmuterole = message.guild.roles.get(docu.mute);
     if (!newmuterole || !docu.mute) {
       try {
-        newnewmuterole = await message.guild.roles.create({
+        var newnewmuterole = await message.guild.roles.create({
           data: {
             name: 'Muted'
           }
@@ -77,15 +77,11 @@ async function mute(message, member, duration, reason) {
       }
       message.guild.channels.forEach(async channel => {
         try {
-          await channel.overwritePermissions({
-            permissionOverwrites: [{
-              id: newnewmuterole.id,
-              deny: ['SEND_MESSAGES',
-                'ADD_REACTIONS',
-                'CONNECT',
-                'SPEAK'
-              ]
-            }]
+          await channel.updateOverwrite(newnewmuterole, {
+            SEND_MESSAGES: false,
+            ADD_REACTIONS: false,
+            CONNECT: false,
+            SPEAK: false
           });
         } catch (e) {
           return await m.edit(`Error: I could not create a Muted role.`);
@@ -105,26 +101,6 @@ async function mute(message, member, duration, reason) {
     const newnewnewrole = muterole ? muterole : newnewmuterole;
     await member.roles.add(newnewnewrole);
     await m.edit(`Muted ${user.tag}`);
-    /*
-    setTimeout(async () => {
-      try {
-        await member.roles.remove(newnewnewrole);
-      } finally {
-        try {
-          await message.client.case.unlock({
-            guild: doc.guild,
-            staff: doc.staff,
-            user: doc.user,
-            case: doc.case,
-            message: doc.message,
-            channel: doc.channel
-          });
-        } catch (e) {
-          console.log(e)
-        }
-      }
-    }, ms(duration));
-    */
   } catch (e) {
     console.log(e)
     return await m.edit(`Error: I could not mute that person.`);
