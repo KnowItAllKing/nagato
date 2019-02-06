@@ -18,7 +18,7 @@ module.exports = new function () {
       return await client.send(message.channel, embed);
     }
     if (args[0].toLowerCase().includes('prefix')) {
-      if (!args[1]) return await message.channel.send(`Error: Invalid prefix.  The maximum length is 16 characters. Only alphanumeric characters (letters and numbers) and underscores are allowed.`);
+      if (!args[1]) return await message.channel.send(`Error: Invalid prefix. The maximum length is 16 characters. Only alphanumeric characters (letters and numbers) and underscores are allowed.`);
       const pref = args.splice(1).join(' ');
       const reg = /[a-zA-Z0-9_]*/;
       if (pref.length > 16 || !reg.test(pref) || pref.includes('`')) return await client.send(message.channel, 'Error: Invalid prefix. The maximum length is 16 characters. Only alphanumeric characters (letters and numbers) and underscores are allowed.');

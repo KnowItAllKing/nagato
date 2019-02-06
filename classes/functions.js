@@ -220,7 +220,7 @@ async function unmute(message, member, reason) {
     complete: false
   });
   const role = await message.client.redis.get(`mute-${message.guild.id}`);
-  if (!doc || !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
+  if (!doc && !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
   const m = await message.channel.send(`Unmuting ${user.tag}...`);
   const docs = await message.client.case.muteModel.find({
     guild: message.guild.id,
