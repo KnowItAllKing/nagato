@@ -3,8 +3,9 @@ module.exports = new function () {
   this.aliases = ['s', 'settings', 'setting', 'config', 'setup'];
   this.description = 'Modify a guild setting. Examples: `n.set prefix n!` `n.set list` `n.set log #log`';
   this.permission = 'ADMINISTRATOR';
-  this.usage = '`n.set <setting> <option>`';
+  this.usage = '`n.set <setting> <option>`. Possible options: `prefix`, `list`, `log`';
   this.execute = async (client, message, args) => {
+    if (!args[0]) return await message.channel.send(`Error: Incorrect usage. ${this.usage}`);
     if (args[0].toLowerCase().includes('list')) {
       const doc = await client.redis.get(`config-${message.guild.id}`) ? JSON.parse(await client.redis.get(`config-${message.guild.id}`)) : await client.guild.model.findOne({
         id: message.guild.id
