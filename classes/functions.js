@@ -227,7 +227,20 @@ async function unmute(message, member, reason) {
     user: user.id,
     complete: false
   });
+  var toreturn = false;
   for (const dox of docs) {
+    const casee = await message.client.case.fetch({
+      guild: dox.guild,
+      user: dox.user,
+      staff: dox.staff,
+      case: dox.case,
+      locked: true
+    });
+    if (casee.staff !== message.author.id) {
+      await m.edit(`Error: This is not your case. Wait for it to be unlocked before modifying another staff member's case.`);
+      toreturn = true;
+      break;
+    }
     try {
       await message.client.case.muteModel.findOneAndUpdate({
         guild: dox.guild,
@@ -245,6 +258,7 @@ async function unmute(message, member, reason) {
       continue;
     }
   }
+  if (toreturn) return;
   try {
     await member.roles.remove(role);
   } catch (e) {
