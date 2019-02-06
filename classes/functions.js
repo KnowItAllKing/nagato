@@ -57,14 +57,14 @@ async function mute(message, member, duration, reason) {
   } catch (e) {
     return console.log(e);
   }
-  var muterole = message.guild.roles.get(await message.client.redis.get(`mute-${message.guild.id}`)) || await Guild.findOne({
+  var muterole = await message.client.redis.get(`mute-${message.guild.id}`) || await Guild.findOne({
     id: message.guild.id
   }).mute;
   if (!muterole) {
     const docu = await Guild.findOne({
       id: message.guild.id
     });
-    var newmuterole = message.guild.roles.get(docu.mute);
+    var newmuterole = docu.mute;
     if (!newmuterole || !docu.mute) {
       try {
         var newnewmuterole = await message.guild.roles.create({
@@ -98,7 +98,7 @@ async function mute(message, member, duration, reason) {
     }
   }
   try {
-    const newnewnewrole = muterole ? muterole : newnewmuterole;
+    const newnewnewrole = muterole ? muterole : newmuterole ? newmuterole : newnewmuterole;
     await member.roles.add(newnewnewrole);
     await m.edit(`Muted ${user.tag}`);
   } catch (e) {
