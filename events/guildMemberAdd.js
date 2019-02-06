@@ -36,17 +36,5 @@ module.exports = async (client, member) => {
         return console.log(e);
       }
     }
-  } // shou;dn\t it be member.id === mute.user.id doesn't make sense.
-} // lol
-// huh?
-// they have to be the same tho. Indeed.
-// what happens if you stringify an array
-// member.id and mute.user.id would do the same.
-// you mean toStirng()
-// same thing yeah
-// i think it becomes a string -> ['try', 'this] becomes 'try,this'
-// ugh i wanted to cache as much as I could
-// i guess this is one of the things I can't right
-
-// yes
-// ['a', 'b', 'c'].toString() -> 'a,b,c'
+  }
+}
