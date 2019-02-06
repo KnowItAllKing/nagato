@@ -19,4 +19,18 @@ module.exports = async (client) => {
     console.log('Unable to cache cases.');
     return process.exit();
   }
+  try {
+    await client.ensureMutes();
+    setInterval(async () => {
+      await client.ensureMutes();
+    }, 300000);
+  } catch (e) {
+    console.log(e);
+  }
+  try {
+    await client.countdownMutes();
+  } catch (e) {
+    console.log(e);
+  }
+
 }

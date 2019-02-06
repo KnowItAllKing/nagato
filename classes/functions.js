@@ -39,9 +39,24 @@ async function mute(message, member, duration, reason) {
       guild: message.guild.id,
       staff: message.author.id,
       reason: reason,
+      duration: duration,
       user: user.id
     });
-  } catch (e) {}
+  } catch (e) {
+    return;
+  }
+  try {
+    await message.client.case.newMute({
+      guild: message.guild.id,
+      staff: message.author.id,
+      reason: reason,
+      duration: ms(duration),
+      user: user.id,
+      case: doc.case
+    });
+  } catch (e) {
+    return console.log(e);
+  }
   var muterole = message.guild.roles.get(await message.client.redis.get(`mute-${message.guild.id}`)) || await Guild.findOne({
     id: message.guild.id
   }).mute;
@@ -90,6 +105,7 @@ async function mute(message, member, duration, reason) {
     const newnewnewrole = muterole ? muterole : newnewmuterole;
     await member.roles.add(newnewnewrole);
     await m.edit(`Muted ${user.tag}`);
+    /*
     setTimeout(async () => {
       try {
         await member.roles.remove(newnewnewrole);
@@ -108,6 +124,7 @@ async function mute(message, member, duration, reason) {
         }
       }
     }, ms(duration));
+    */
   } catch (e) {
     console.log(e)
     return await m.edit(`Error: I could not mute that person.`);
@@ -195,3 +212,56 @@ async function kick(message, member, reason) {
   return await msg.edit(`Kicked ${user.tag}`);
 }
 module.exports.kick = kick;
+async function unmute(message, member, reason) {
+  const user = member.user;
+  const doc = await message.client.case.muteModel.findOne({
+    guild: message.guild.id,
+    user: user.id,
+    complete: false
+  });
+  const role = await message.client.redis.get(`mute-${message.guild.id}`);
+  if (!doc || !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
+  const m = await message.channel.send(`Unmuting ${user.tag}...`);
+  const docs = await message.client.case.muteModel.find({
+    guild: message.guild.id,
+    user: user.id,
+    complete: false
+  });
+  for (const dox of docs) {
+    try {
+      await message.client.case.muteModel.findOneAndUpdate({
+        guild: dox.guild,
+        staff: dox.staff,
+        user: dox.user,
+        complete: false,
+        case: dox.case
+      }, {
+        $set: {
+          duration: 0
+        }
+      });
+    } catch (e) {
+      console.log(e);
+      continue;
+    }
+  }
+  try {
+    await member.roles.remove(role);
+  } catch (e) {
+    return;
+  }
+  try {
+    await message.client.case.create({
+      type: 'Unmute',
+      guild: message.guild.id,
+      staff: message.author.id,
+      reason: reason,
+      user: user.id
+    });
+  } catch (e) {
+    return console.log(e);
+  }
+  return await m.edit(`Unmuted ${user.tag}`);
+
+}
+module.exports.unmute = unmute;

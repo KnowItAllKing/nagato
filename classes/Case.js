@@ -1,5 +1,6 @@
-const CaseModel = require('../models/Case');
-const Guild = require('../models/Guild');
+const CaseModel = require('../models/Case'),
+  Guild = require('../models/Guild'),
+  Mute = require('../models/Mute');
 const sprintf = require('sprintf-js').sprintf;
 const {
   MessageEmbed
@@ -8,6 +9,7 @@ class Case {
   constructor(client) {
     this.client = client;
     this.model = CaseModel;
+    this.muteModel = Mute;
   }
   get(type) {
     let color = '';
@@ -15,7 +17,7 @@ class Case {
     if (type === 'Kick') color = '#fbff00';
     if (type === 'Ban') color = '#ff0000';
     if (type === 'Softban') color = '#ff7d00';
-    if (type === 'Mute') color = '#ffd000';
+    if (type === 'Mute' || type === 'Unmute') color = '#ffd000';
     return color;
   }
   async create(options) {
@@ -41,9 +43,10 @@ class Case {
       .setDescription(`\`Case #${casenum}\``)
       .addField(`User`, `\`${user.tag} (${options.user})\``, true)
       .addField(`Staff`, `\`${staff.tag} (${options.staff})\``, true)
-      .addField(`Reason`, `${options.reason || 'No reason specified. Add one using `n.reason ' + casenum + ' <...reason>`'}`, false)
+      .addField(`Reason`, `${options.reason || 'No reason specified. Add one using `n.reason ' + casenum + ' <...reason>`'}`, true)
       .setColor(color)
       .setTimestamp();
+    if (options.duration) embed.addField(`Duration`, `${options.duration}`, true);
     let chan = this.client.channels.get(await this.client.redis.get(`log-${options.guild}`));
     if (!chan) {
       const doc = await Guild.findOne({
@@ -63,6 +66,7 @@ class Case {
       staff: options.staff,
       type: options.type,
       reason: options.reason,
+      duration: options.duration ? options.duration : 'N/A',
       user: options.user,
       case: casenum,
       message: chan ? msg.id : null,
@@ -136,6 +140,18 @@ class Case {
       kicks: k,
       bans: b
     };
+  }
+  async newMute(options) {
+    const mute = new Mute({
+      guild: options.guild,
+      staff: options.staff,
+      reason: options.reason,
+      duration: parseInt(options.duration),
+      user: options.user,
+      case: options.case,
+      complete: false
+    });
+    return await mute.save();
   }
 }
 module.exports = Case;

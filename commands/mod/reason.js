@@ -26,7 +26,12 @@ module.exports = new function () {
     });
     const msg = await message.channel.send(`Editing case number \`${doc.case}\`...`);
     await client.redis.set(`case${doc.case}-${message.guild.id}`, JSON.stringify(doc));
-    const m = await client.channels.get(doc.channel).messages.fetch(doc.message);
+    if (!doc.message || !doc.channel) return await message.channel.send(`Error: The log message doesn't exist.`);
+    try {
+      var m = await client.channels.get(doc.channel).messages.fetch(doc.message);
+    } catch (e) {
+      await message.channel.send(`Error: Could not find the log message.`);
+    }
     const staff = await client.users.fetch(doc.staff),
       user = await client.users.fetch(doc.user);
     const color = client.case.get(doc.type);

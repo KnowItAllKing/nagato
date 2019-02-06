@@ -4,6 +4,7 @@ const Case = mongoose.Schema({
   staff: String,
   type: String,
   reason: String,
+  duration: String,
   user: String,
   case: Number,
   message: String,
