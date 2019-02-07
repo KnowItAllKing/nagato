@@ -197,12 +197,15 @@ async function unmute(message, member, reason) {
   });
   const role = await message.client.redis.get(`mute-${message.guild.id}`);
   if (!doc && !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
+  if (!member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
   const m = await message.channel.send(`Unmuting ${user.tag}...`);
   const docs = await message.client.case.muteModel.find({
     guild: message.guild.id,
     user: user.id,
+    staff: message.author.id,
     complete: false
   });
+  if (docs.length === 0) return await m.edit(`Error: There are no open mute cases for this person assigned to you.`);
   var toreturn = false;
   for (const dox of docs) {
     const casee = await message.client.case.fetch({
@@ -226,7 +229,8 @@ async function unmute(message, member, reason) {
         case: dox.case
       }, {
         $set: {
-          duration: 0
+          duration: 0,
+          complete: true
         }
       });
     } catch (e) {
@@ -234,7 +238,7 @@ async function unmute(message, member, reason) {
       continue;
     }
   }
-  if (toreturn) return;
+  if (toreturn) return await m.edit(`Error: An error occurred.`);
   try {
     await member.roles.remove(role);
   } catch (e) {
