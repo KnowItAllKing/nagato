@@ -57,14 +57,14 @@ async function mute(message, member, duration, reason) {
   } catch (e) {
     return console.log(e);
   }
-  var muterole = await message.client.redis.get(`mute-${message.guild.id}`) || await Guild.findOne({
+  var muterole = message.guild.roles.get(await message.client.redis.get(`mute-${message.guild.id}`)) || message.guild.roles.get(await Guild.findOne({
     id: message.guild.id
-  }).mute;
+  }).mute);
   if (!muterole) {
     const docu = await Guild.findOne({
       id: message.guild.id
     });
-    var newmuterole = docu.mute;
+    var newmuterole = message.guild.roles.get(docu.mute);
     if (!newmuterole || !docu.mute) {
       try {
         var newnewmuterole = await message.guild.roles.create({
@@ -97,7 +97,7 @@ async function mute(message, member, duration, reason) {
     }
   }
   try {
-    const newnewnewrole = muterole ? muterole : newmuterole ? newmuterole : newnewmuterole;
+    const newnewnewrole = muterole || newmuterole || newnewmuterole;
     await member.roles.add(newnewnewrole);
     await message.client.redis.set(`mute-${message.guild.id}`, newnewnewrole.id);
     await m.edit(`Muted ${user.tag}`);
@@ -196,8 +196,9 @@ async function unmute(message, member, reason) {
     complete: false
   });
   const role = await message.client.redis.get(`mute-${message.guild.id}`);
-  if (!doc && !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted. 0`);
-  if (!member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted. 1`);
+  console.log(role);
+  if (!doc && !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
+  if (!member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
   const m = await message.channel.send(`Unmuting ${user.tag}...`);
   const docs = await message.client.case.muteModel.find({
     guild: message.guild.id,
