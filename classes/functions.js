@@ -87,7 +87,6 @@ async function mute(message, member, duration, reason) {
           return await m.edit(`Error: I could not create a Muted role.`);
         }
       })
-      await message.client.redis.set(`mute-${message.guild.id}`, newnewmuterole.id);
       await Guild.findOneAndUpdate({
         id: message.guild.id
       }, {
@@ -100,6 +99,7 @@ async function mute(message, member, duration, reason) {
   try {
     const newnewnewrole = muterole ? muterole : newmuterole ? newmuterole : newnewmuterole;
     await member.roles.add(newnewnewrole);
+    await message.client.redis.set(`mute-${message.guild.id}`, newnewnewrole.id);
     await m.edit(`Muted ${user.tag}`);
   } catch (e) {
     console.log(e)
@@ -196,8 +196,8 @@ async function unmute(message, member, reason) {
     complete: false
   });
   const role = await message.client.redis.get(`mute-${message.guild.id}`);
-  if (!doc && !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
-  if (!member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted.`);
+  if (!doc && !member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted. 0`);
+  if (!member.roles.has(role)) return await message.channel.send(`Error: That person isn't muted. 1`);
   const m = await message.channel.send(`Unmuting ${user.tag}...`);
   const docs = await message.client.case.muteModel.find({
     guild: message.guild.id,
