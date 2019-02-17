@@ -54,7 +54,6 @@ module.exports = new function () {
       .setAuthor(`Help`, client.user.displayAvatarURL())
       .addField(`**Admin**`, adminStr, false)
       .addField(`**Mod**`, modStr, false)
-      .addField(`**Music**`, musicStr, false)
       .addField(`**User**`, userStr, false)
       .addField(`**Other**`, otherStr, false)
       .setColor(process.env.COLOR);
